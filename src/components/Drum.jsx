@@ -1,151 +1,84 @@
 import React, { useState, useEffect } from "react";
 import drums from "./drums";
+import PowerIcon from "@material-ui/icons/Power";
+import PowerOffIcon from "@material-ui/icons/PowerOff";
 
 function Drum() {
-
-  // declare a state variable drumsound with initial value empty string
   const [drumSound, setdrumSound] = useState("");
-
-  // declare a state variable power with initial value false
   const [power, setPower] = useState(false);
 
-  // declare function handleKeyDown to keydown events
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown)
+    console.log(drumSound);
+  }, [drumSound]);
 
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   });
-
 
   const handleClick = (event) => {
     if (power) {
       let clickedButton = event.target.id;
-
-      drums.forEach(elem => {
-        if (elem.name === clickedButton) {
-          let audio = new Audio(elem.src);
-          audio.play();
-          document.getElementById(elem.name).classList.add("pressed");
-          setTimeout(() => {
-            document.getElementById(elem.name).classList.remove("pressed");
-          }, 1000)
-        }
-        return () => clearTimeout();
-      });
       setdrumSound(clickedButton);
+      event.target.children[0].play();
     }
-
-  }
+  };
 
   const handleKeyDown = (event) => {
     if (power) {
-      let clickedButton;
       let pressedKey = event.keyCode;
-
-      drums.forEach(elem => {
-        if (elem.keycode == pressedKey) {
-          let audio = new Audio(elem.src);
-          audio.play();
-          clickedButton = elem.name;
-          document.getElementById(elem.name).classList.add("pressed");
-          setTimeout(() => {
-            document.getElementById(elem.name).classList.remove("pressed");
-          }, 1000)
-
+      const options = document.getElementsByClassName("container")[0];
+      for (let i = 0; i < options.children.length; i++) {
+        if (options.children[i].getAttribute("keycode") == pressedKey) {
+          options.children[i].children[0].play();
+          setdrumSound(options.children[i].id);
         }
-        return () => clearTimeout();
-      });
-      setdrumSound(clickedButton);
+      }
     }
-  }
+  };
 
   const handlePowerOn = () => {
-    setPower(true);
-  }
-
-  const handlePowerOff = () => {
-    setPower(false);
-    setdrumSound("");
-  }
+    setPower((preValue) => {
+      setdrumSound("")
+      return !preValue;
+    });
+  };
 
   return (
-    <div class="wrapper2">
-
-      <div class="display"> {drumSound} </div>
-      <div class="container">
-        <div class="drum-master row">
-
-          <div onClick={handleClick}
-            className="drum-pad col-sm-3"
-            id="Snare"
-          >
-            Q
+    <div className="wrapper1">
+      <div className="display"> {drumSound} </div>
+      <div className="wrapper2">
+        <div className="container">
+          {drums.map((elem) => {
+            return (
+              <div
+                onClick={handleClick}
+                key={elem.name}
+                id={elem.name}
+                keycode={elem.keycode}
+                className="drum"
+              >
+                {elem.letter}
+                <audio id="audio">
+                  <source src={elem.src} type="audio/mpeg" />
+                </audio>
+              </div>
+            );
+          })}
+          <div className="power" onClick={handlePowerOn}>
+            {power ? (
+              <PowerIcon style={{ fontSize: 40, color: "green" }} />
+            ) : (
+              <PowerOffIcon style={{ fontSize: 40, color: "red" }} />
+            )}
           </div>
-          <div
-            onClick={handleClick}
-            class="drum-pad col-sm-3"
-            id="Bass 1">
-            W
-          </div>
-          <div
-            onClick={handleClick}
-            class="drum-pad col-sm-3"
-            id="Bongo">
-            E
-          </div>
-        </div>
-
-        <div class="drum-master row">
-          <div
-            onClick={handleClick}
-            class="drum-pad col-sm-3"
-            id="Tom Tom">
-            A
-          </div>
-          <div onClick={handleClick}
-            class="drum-pad col-sm-3"
-            id="Bass 3">
-            S
-          </div>
-          <div
-            onClick={handleClick}
-            class="drum-pad col-sm-3"
-            id="Shotgun">
-            D
-          </div>
-        </div>
-
-        <div class="drum-master row">
-          <div
-            onClick={handleClick}
-            id="Kick Hat"
-            class="drum-pad col-sm-3">
-            Z
-        </div>
-          <div
-            onClick={handleClick}
-            class="drum-pad col-sm-3"
-            id="Hit">
-            X
-          </div>
-          <div
-            onClick={handleClick}
-            class="drum-pad col-sm-3"
-            id="Closed">
-            C
-          </div>
-        </div>
-
-        <div className="power">
-          <div className="power-header"
-            style={{ backgroundColor: power ? "chartreuse" : "red" }}>
-            Power
-          </div>
-          <button onClick={handlePowerOn} className="power-on"> On </button>
-          <button onClick={handlePowerOff} className="power-off"> Off </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default Drum;
