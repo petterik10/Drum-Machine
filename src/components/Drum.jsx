@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import drums from "./drums";
-import PowerIcon from "@material-ui/icons/Power";
-import PowerOffIcon from "@material-ui/icons/PowerOff";
+import DrumPad from "./DrumPad";
+import DrumHeader from "./DrumHeader";
+import Power from "./Power";
 
 function Drum() {
-  const [drumSound, setdrumSound] = useState("");
+  const [drumSoundName, setDrumSoundName] = useState("");
   const [power, setPower] = useState(false);
-
-  useEffect(() => {
-    console.log(drumSound);
-  }, [drumSound]);
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
@@ -19,62 +16,47 @@ function Drum() {
     };
   });
 
-  const handleClick = (event) => {
+  const handleClick = (sound) => {
     if (power) {
-      let clickedButton = event.target.id;
-      setdrumSound(clickedButton);
-      event.target.children[0].play();
+      const audio = new Audio(sound);
+      audio.play();
     }
   };
 
   const handleKeyDown = (event) => {
     if (power) {
       let pressedKey = event.keyCode;
-      const options = document.getElementsByClassName("container")[0];
-      for (let i = 0; i < options.children.length; i++) {
-        if (options.children[i].getAttribute("keycode") == pressedKey) {
-          options.children[i].children[0].play();
-          setdrumSound(options.children[i].id);
+      drums.forEach((elem) => {
+        if (elem.keycode === pressedKey) {
+          const audio = new Audio(elem.src);
+          audio.play();
+          setDrumSoundName(elem.name);
         }
-      }
+      });
     }
-  };
-
-  const handlePowerOn = () => {
-    setPower((preValue) => {
-      setdrumSound("")
-      return !preValue;
-    });
   };
 
   return (
     <div className="wrapper1">
-      <div className="display"> {drumSound} </div>
+      <DrumHeader power={power} drumSoundName={drumSoundName} />
       <div className="wrapper2">
         <div className="container">
-          {drums.map((elem) => {
+          {drums.map((drum) => {
             return (
-              <div
-                onClick={handleClick}
-                key={elem.name}
-                id={elem.name}
-                keycode={elem.keycode}
-                className="drum"
-              >
-                {elem.letter}
-                <audio id="audio">
-                  <source src={elem.src} type="audio/mpeg" />
-                </audio>
-              </div>
+              <DrumPad
+                key={drum.name}
+                setDrumSoundName={setDrumSoundName}
+                handleClick={handleClick}
+                drum={drum}
+                power={power}
+              />
             );
           })}
-          <div className="power" onClick={handlePowerOn}>
-            {power ? (
-              <PowerIcon style={{ fontSize: 40, color: "green" }} />
-            ) : (
-              <PowerOffIcon style={{ fontSize: 40, color: "red" }} />
-            )}
-          </div>
+          <Power
+            power={power}
+            setPower={setPower}
+            setDrumSoundName={setDrumSoundName}
+          />
         </div>
       </div>
     </div>

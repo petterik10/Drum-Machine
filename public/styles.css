@@ -1,4 +1,4 @@
- * {
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -14,12 +14,12 @@ body {
   color: white;
   background-color: #040a08;
   background-image: url("https://www.transparenttextures.com/patterns/back-pattern.png");
-  
 }
 
 h1 {
   text-align: center;
   justify-content: center;
+  margin-right: 30px;
 }
 
 .wrapper1 {
@@ -33,16 +33,21 @@ h1 {
   justify-content: space-between;
 }
 
- .display {
+.display {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.header {
+  width: 40%;
   background-color: yellow;
-  width: 180px;
   height: 30px;
   border: 1px solid black;
+  margin-right: 33px;
   color: black;
   text-align: center;
-  margin-left: 140px;
-
-
 }
 .container {
   width: 90%;
@@ -61,11 +66,9 @@ h1 {
   background-image: url("https://www.transparenttextures.com/patterns/3px-tile.png");
   background-color: #010504;
   cursor: pointer;
-
 }
 
 .power {
   width: 30%;
   cursor: pointer;
 }
-
